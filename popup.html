@@ -1,102 +1,121 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Camera Wizard Settings</title>
-  <style>
-    /* The switch - the box around the slider */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 60px;
-  height: 34px;
-}
+    <title>Camera Wizard Settings</title>
+    <style>
+        /* The switch - the box around the slider */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
 
-/* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+        /* Hide default HTML checkbox */
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-/* The slider */
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
 
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
-}
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
 
-input:checked + .slider {
-  background-color: #2196F3;
-}
+        input:checked+.slider {
+            background-color: #2196F3;
+        }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
-}
+        input:focus+.slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
 
-input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
-}
+        input:checked+.slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
 
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
 
-.slider.round:before {
-  border-radius: 50%;
-}
+        .slider.round:before {
+            border-radius: 50%;
+        }
 
-/* Additional styles for camera lines */
-.cameraLine {
-      background-color: lightgray;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 5px;
-}
-  </style>
+        /* Additional styles for camera lines */
+        .cameraLine {
+            background-color: lightgray;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
 </head>
-<body>
-  <h1>Camera Wizard</h1>
-  TEXT! - More Text
-  <label class="switch">
-    <input type="checkbox" id="toggleConversion">
-    <span class="slider round"></span>
-</label>
-<!-- Section for adding cameras -->
-<div id="cameraList">
-    <button id="addCamera">Add Camera</button>
-</div>
 
-<!-- Template for a camera line -->
-<template id="cameraTemplate">
-    <div class="cameraLine">
-        <input type="text" placeholder="Camera Name">
-        <input type="number" placeholder="Target First Slice">
-        <input type="number" placeholder="Shutter Angle">
-        <button class="deleteCamera">Delete</button>
+<body>
+    <h1>Camera Wizard</h1>
+    TEXT! - More Text
+    <label class="switch">
+        <input type="checkbox" id="toggleConversion">
+        <span class="slider round"></span>
+    </label>
+
+    <!-- Section for displaying max slice count -->
+    <div>
+        <label for="maxSliceCount">Max Slice Count:</label>
+        <span id="maxSliceCount">Loading...</span>
     </div>
-</template>
-<script src="popup.js"></script> <!-- Link to your JavaScript file -->
+
+    <!-- Section for adding cameras -->
+    <div id="cameraList">
+        <button id="addCamera">Add Camera</button>
+    </div>
+
+    <!-- Template for a camera line -->
+    <template id="cameraTemplate">
+        <div class="cameraLine">
+            <label>camera name
+                <input type="text" class="cameraName" placeholder="Camera Name">
+            </label>
+            <label>First Target Slice
+                <input type="number" class="targetFirstSlice" placeholder="Target First Slice">
+            </label>
+            <label>Shutter Angle
+                <input type="number" class="shutterAngle" placeholder="Shutter Angle">
+            </label>
+            <label>GUI Color
+                <input type="color" class="cameraColor" value="#ff0000"> <!-- Default color set to red -->
+            </label>
+            <button class="deleteCamera">Delete</button>
+        </div>
+    </template>
+    <script src="popup.js"></script> <!-- Link to your JavaScript file -->
 
 </body>
+
 </html>

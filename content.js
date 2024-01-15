@@ -1,8 +1,10 @@
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    // Handling toggle conversion
     if (request.toggle !== undefined) {
         let timingsElements = document.querySelectorAll('.subframe.timings .value');
         timingsElements.forEach(element => {
             if (request.toggle) {
+                console.log("toggle received");
                 // Convert to microseconds
                 let msString = element.textContent.replace('ms', '');
                 element.textContent = convertToMicroseconds(msString);
@@ -12,6 +14,43 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 element.textContent = convertToMilliseconds(usString);
             }
         });
+    }
+
+    // Handling camera data
+// Handling camera data
+if (request.cameras) {
+    console.log('Received camera data:', request.cameras);
+    // Clear existing custom styles
+    document.querySelectorAll('.sequencer .track th.slice').forEach(th => {
+        th.style.backgroundColor = ''; // Reset the background color
+    });
+
+    // Apply new styles based on camera data
+    request.cameras.forEach(camera => {
+        if (camera.targetFirstSlice && camera.shutterAngle && camera.color) {
+            const maxSlices = document.querySelectorAll('.sequencer .track th.slice').length;
+            const slicesToColor = Math.round((parseInt(camera.shutterAngle) / 360) * maxSlices);
+            let targetSlice = parseInt(camera.targetFirstSlice);
+
+            for (let i = 0; i < slicesToColor; i++) {
+                // Calculate the slice number considering wrap-around
+                let sliceNumber = targetSlice - i;
+                if (sliceNumber < 1) {
+                    sliceNumber += maxSlices;
+                }
+
+                // Apply color to the calculated slice
+                const sliceElement = document.querySelector(`.sequencer .track th.slice:nth-child(${sliceNumber + 1})`); // +4 for offset
+                if (sliceElement) {
+                    sliceElement.style.backgroundColor = camera.color;
+                }
+            }
+        }
+    });
+}
+
+    if (request.getMaxSliceNumber) {
+        sendMaxSliceNumber();
     }
 });
 
@@ -25,3 +64,44 @@ function convertToMilliseconds(usString) {
     return (usValue / 1000).toFixed(3) + 'ms';
 }
 
+
+
+// Function to get and store the largest slice number
+function updateMaxSliceCount() {
+    const sliceElements = document.querySelectorAll('.sequencer .track th.slice');
+    if (sliceElements.length > 0) {
+        const lastSliceElement = sliceElements[sliceElements.length - 1];
+        const content = lastSliceElement.textContent.trim();
+        const match = content.match(/\d+$/);
+        if (match) {
+            const maxSliceNumber = parseInt(match[0]);
+            console.log("Max slice number:", maxSliceNumber);
+            chrome.storage.local.set({ 'maxSliceNumber': maxSliceNumber });
+        } else {
+            console.error("No slice number found");
+        }
+    }
+}
+
+// Observe changes in the DOM
+const targetNode = document.querySelector('.sequencer .track');
+if (targetNode) {
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            updateMaxSliceCount();
+        });
+    });
+
+    // Configuration of the observer
+    const config = { childList: true, subtree: true };
+
+    // Start observing
+    observer.observe(targetNode, config);
+}
+
+
+
+// Call sendMaxSliceNumber on window load
+window.addEventListener('load', function() {
+    setTimeout(updateMaxSliceCount, 500); // Delay to ensure full page load
+});
