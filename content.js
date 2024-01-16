@@ -3,30 +3,51 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.toggle !== undefined) {
         let timingsElements = document.querySelectorAll('.subframe.timings .value');
         timingsElements.forEach(element => {
-            if (request.toggle) {
-                console.log("toggle received");
-                // Convert to microseconds
-                let msString = element.textContent.replace('ms', '');
-                element.textContent = convertToMicroseconds(msString);
-            } else {
-                // Convert back to milliseconds (if needed)
-                let usString = element.textContent.replace('μs', '');
-                element.textContent = convertToMilliseconds(usString);
+            if (request.toggle) { // Convert to microseconds
+                if (!element.textContent.includes('μs')) { // Check if not already in microseconds
+                    let msString = element.textContent.replace('ms', '');
+                    element.textContent = convertToMicroseconds(msString);
+                }
+            } else { // Convert back to milliseconds
+                if (element.textContent.includes('μs')) { // Check if in microseconds
+                    let usString = element.textContent.replace('μs', '');
+                    element.textContent = convertToMilliseconds(usString);
+                }
             }
         });
     }
 
     // Handling camera data
-// Handling camera data
-if (request.cameras) {
-    console.log('Received camera data:', request.cameras);
+    if (request.cameras) {
+        applyCameraSettings(request.cameras);
+    }
+
+    if (request.getMaxSliceNumber) {
+        sendMaxSliceNumber();
+    }
+});
+
+// Convert milliseconds to microseconds
+function convertToMicroseconds(msString) {
+    let msValue = parseFloat(msString);
+    return (msValue * 1000).toFixed(3) + 'μs';
+}
+
+// Convert microseconds to milliseconds
+function convertToMilliseconds(usString) {
+    let usValue = parseFloat(usString);
+    return (usValue / 1000).toFixed(3) + 'ms';
+}
+
+// Apply camera settings based on the provided data
+function applyCameraSettings(cameras) {
     // Clear existing custom styles
     document.querySelectorAll('.sequencer .track th.slice').forEach(th => {
         th.style.backgroundColor = ''; // Reset the background color
     });
 
     // Apply new styles based on camera data
-    request.cameras.forEach(camera => {
+    cameras.forEach(camera => {
         if (camera.targetFirstSlice && camera.shutterAngle && camera.color) {
             const maxSlices = document.querySelectorAll('.sequencer .track th.slice').length;
             const slicesToColor = Math.round((parseInt(camera.shutterAngle) / 360) * maxSlices);
@@ -49,23 +70,6 @@ if (request.cameras) {
     });
 }
 
-    if (request.getMaxSliceNumber) {
-        sendMaxSliceNumber();
-    }
-});
-
-function convertToMicroseconds(msString) {
-    let msValue = parseFloat(msString);
-    return (msValue * 1000).toFixed(3) + 'μs';
-}
-
-function convertToMilliseconds(usString) {
-    let usValue = parseFloat(usString);
-    return (usValue / 1000).toFixed(3) + 'ms';
-}
-
-
-
 // Function to get and store the largest slice number
 function updateMaxSliceCount() {
     const sliceElements = document.querySelectorAll('.sequencer .track th.slice');
@@ -86,8 +90,8 @@ function updateMaxSliceCount() {
 // Observe changes in the DOM
 const targetNode = document.querySelector('.sequencer .track');
 if (targetNode) {
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
+    const observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
             updateMaxSliceCount();
         });
     });
@@ -99,9 +103,14 @@ if (targetNode) {
     observer.observe(targetNode, config);
 }
 
-
-
-// Call sendMaxSliceNumber on window load
-window.addEventListener('load', function() {
+// Call updateMaxSliceCount on window load
+window.addEventListener('load', function () {
     setTimeout(updateMaxSliceCount, 500); // Delay to ensure full page load
+});
+
+// Apply camera settings on page load
+chrome.storage.local.get(['cameras'], function (result) {
+    if (result.cameras) {
+        applyCameraSettings(result.cameras);
+    }
 });

@@ -1,12 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
     const toggleSwitch = document.getElementById('toggleConversion');
+
+    // Load the saved state of the toggle switch
+    chrome.storage.local.get(['toggleState'], function(result) {
+        if (result.toggleState !== undefined) {
+            toggleSwitch.checked = result.toggleState;
+        }
+    });
+
     if (toggleSwitch) {
         toggleSwitch.addEventListener('change', function(event) {
+            // Save the state of the toggle switch
+            chrome.storage.local.set({'toggleState': event.target.checked});
+
+            // Send the state to content.js
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                 chrome.tabs.sendMessage(tabs[0].id, {toggle: event.target.checked});
             });
         });
     }
+
 
     // Load cameras on popup open
     loadCameras();
