@@ -139,8 +139,8 @@ function calculateSensorSyncShift(requiredOffsetMs) {
         return;
     }
 
-    const requiredOffsetPicoseconds = requiredOffsetMs * 1000000; // Convert ms to picoseconds
-    const sensorSyncShiftNumber = requiredOffsetPicoseconds / sensorSyncOffsetUnitPicoseconds;
+    const requiredOffsetPicoseconds = requiredOffsetMs * 1000000000; // Convert ms to picoseconds
+    const sensorSyncShiftNumber = Math.floor(requiredOffsetPicoseconds / sensorSyncOffsetUnitPicoseconds);
     console.log("RED sensor sync shift number:", sensorSyncShiftNumber);
 
     // You can now use sensorSyncShiftNumber for further communication or logic

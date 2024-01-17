@@ -255,7 +255,7 @@ function updateRequiredOffsetForCamera(cameraLine) {
     if (targetSlicesInput && targetFirstSliceInput && requiredOffsetInput && !isNaN(slicePeriod)) {
         const targetSlices = parseInt(targetSlicesInput.value) || 0;
         const firstTargetSlice = parseInt(targetFirstSliceInput.value) || 0;
-        const requiredOffset = (firstTargetSlice - targetSlices) * slicePeriod;
+        const requiredOffset = firstTargetSlice * slicePeriod;
         requiredOffsetInput.value = requiredOffset.toFixed(3) + ' ms';
         //send to background
         chrome.runtime.sendMessage({
