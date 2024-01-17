@@ -40,10 +40,19 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log("Max Slice Number:", result.maxSliceNumber);
             document.getElementById('maxSliceCount').textContent = result.maxSliceNumber; // Update DOM element
             updateMaxSliceInputs(result.maxSliceNumber); // Update max attribute of target slice inputs
+            updateOptimalShutterAngles(result.maxSliceNumber); // Update optimal shutter angles
+        
         }
     });
 
-
+    
+    // Event listener for target slices input changes in each camera line
+    document.getElementById('cameraList').addEventListener('change', function (event) {
+        if (event.target.classList.contains('targetSlices')) {
+            const maxSliceNumber = parseInt(document.getElementById('maxSliceCount').textContent);
+            updateOptimalShutterAngleForInput(event.target, maxSliceNumber);
+        }
+    });
 
 
 });
@@ -69,7 +78,7 @@ function addCameraLine(camera = {}) {
     // Attach validation to the input
     validateSliceInput(targetFirstSliceInput, parseInt(document.getElementById('maxSliceCount').textContent));
 
-    const shutterAngleInput = cameraLine.querySelector('.shutterAngle');
+    const targetSlicesInput = cameraLine.querySelector('.targetSlices');
     const colorInput = cameraLine.querySelector('.cameraColor');
     const ipInput = cameraLine.querySelector('.ipAddress');
     const sensorShiftOffsetInput = cameraLine.querySelector('.sensorShiftOffset');
@@ -77,14 +86,14 @@ function addCameraLine(camera = {}) {
     //load input values or set to defaults
     nameInput.value = camera.name || '';
     targetFirstSliceInput.value = camera.targetFirstSlice || '';
-    shutterAngleInput.value = camera.shutterAngle || '';
+    targetSlicesInput.value = camera.targetSlices || '';
     colorInput.value = camera.color || '#ff0000';
     ipInput.value = camera.ip || '';
     sensorShiftOffsetInput.value = camera.sensorShiftOffset || '';
 
 
     // Add change event listeners to update data whenever any input changes
-    [nameInput, targetFirstSliceInput, shutterAngleInput, colorInput, ipInput, sensorShiftOffsetInput].forEach(input => {
+    [nameInput, targetFirstSliceInput, targetSlicesInput, colorInput, ipInput, sensorShiftOffsetInput].forEach(input => {
         input.addEventListener('change', saveCameras);
     });
 
@@ -141,7 +150,7 @@ function saveCameras() {
         let camera = {
             name: line.querySelector('input[type=text]').value,
             targetFirstSlice: line.querySelector('.targetFirstSlice').value,
-            shutterAngle: line.querySelector('.shutterAngle').value,
+            targetSlices: line.querySelector('.targetSlices').value,
             color: line.querySelector('.cameraColor').value,
             redKomodoEnabled: line.querySelector('.redKomodoCheckbox').checked,
             ip: line.querySelector('.ipAddress').value,
@@ -190,6 +199,42 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    chrome.storage.local.get(['slicePeriod', 'framePeriod'], function(result) {
+        if (result.slicePeriod && result.framePeriod) {
+            document.getElementById('slicePeriod').textContent = result.slicePeriod;
+            document.getElementById('framePeriod').textContent = result.framePeriod;
+        }
+    });
+});
+
+
+
 function updateConnectionStatusUI(ip, status) {
     // Implement logic to update the connection status indicator in the popup UI
+}
+
+function calculateOptimalShutterAngle(targetSlices, maxSlices) {
+    // Calculate the optimal shutter angle
+    return (targetSlices / maxSlices) * 360;
+}
+
+function updateOptimalShutterAngles(maxSliceNumber) {
+    document.querySelectorAll('.cameraLine').forEach(cameraLine => {
+        const targetSlicesInput = cameraLine.querySelector('.targetSlices');
+        updateOptimalShutterAngleForInput(targetSlicesInput, maxSliceNumber);
+    });
+}
+
+function updateOptimalShutterAngleForInput(inputElement, maxSliceNumber) {
+    const targetSlices = parseInt(inputElement.value);
+    const optimalShutterAngle = calculateOptimalShutterAngle(targetSlices, maxSliceNumber);
+
+    // Navigate up to the common parent of both inputs, then find the .optimalShutterAngle input
+    const parentElement = inputElement.closest('.cameraLine');
+    const optimalShutterAngleInput = parentElement.querySelector('.optimalShutterAngle');
+
+    if (optimalShutterAngleInput) {
+        optimalShutterAngleInput.value = optimalShutterAngle.toFixed(2) + '°';
+    }
 }

@@ -66,11 +66,14 @@
             <span class="slider round"></span>
         </label>
     </div>
-    <!-- Section for displaying max slice count -->
+    <!-- Section for displaying max slice count and period data -->
     <div class="mb-4">
         <label for="maxSliceCount" class="font-medium">Max Slice Count:</label>
         <span id="maxSliceCount">Loading...</span>
+        <p>Slice Period: <span id="slicePeriod">Loading...</span></p>
+        <p>Frame Period: <span id="framePeriod">Loading...</span></p>
     </div>
+    
 
     <!-- Section for adding cameras -->
     <div id="cameraList" class="mb-4">
@@ -93,11 +96,13 @@
                 </label>
             </div>
             <div class="flex items-center justify-between mb-2">
-                <label class="flex-1 mr-2">
-                    Shutter Angle
-                    <input type="number" class="shutterAngle w-full p-1 rounded border border-gray-300"
-                        placeholder="Shutter Angle">
+                <label>Target Slices
+                    <input type="number" class="targetSlices" placeholder="Target Slices">
                 </label>
+                <label>Optimal Shutter Angle (readonly)
+                    <input type="text" class="optimalShutterAngle" readonly>
+                </label>
+                
                 <label class="flex-1 mr-2">
                     GUI Color
                     <input type="color" class="cameraColor w-6 h-6 border border-gray-300" value="#ff0000">
@@ -105,6 +110,8 @@
                 </label>
 
             </div>
+
+            
             <!-- RED Komodo RCP2 Checkbox -->
             <label>
                 <input type="checkbox" class="redKomodoCheckbox"> RED Komodo RCP2

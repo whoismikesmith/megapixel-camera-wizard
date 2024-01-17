@@ -48,9 +48,9 @@ function applyCameraSettings(cameras) {
 
     // Apply new styles based on camera data
     cameras.forEach(camera => {
-        if (camera.targetFirstSlice && camera.shutterAngle && camera.color) {
+        if (camera.targetFirstSlice && camera.targetSlices && camera.color) {
             const maxSlices = document.querySelectorAll('.sequencer .track th.slice').length;
-            const slicesToColor = Math.round((parseInt(camera.shutterAngle) / 360) * maxSlices);
+            const slicesToColor = camera.targetSlices;
             let targetSlice = parseInt(camera.targetFirstSlice);
 
             for (let i = 0; i < slicesToColor; i++) {
@@ -69,6 +69,22 @@ function applyCameraSettings(cameras) {
         }
     });
 }
+
+// Function to scrape and store period data
+function storePeriodData() {
+    const periodElement = document.querySelector('.period');
+    if (periodElement) {
+        const periodText = periodElement.textContent.trim();
+        const periods = periodText.split(' / ');
+        if (periods.length === 2) {
+            chrome.storage.local.set({
+                slicePeriod: periods[0], 
+                framePeriod: periods[1]
+            });
+        }
+    }
+}
+
 
 // Function to get and store the largest slice number
 function updateMaxSliceCount() {
@@ -93,6 +109,7 @@ if (targetNode) {
     const observer = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
             updateMaxSliceCount();
+            storePeriodData();
         });
     });
 
@@ -103,9 +120,10 @@ if (targetNode) {
     observer.observe(targetNode, config);
 }
 
-// Call updateMaxSliceCount on window load
+// Call updateMaxSliceCount and storePeriodData on window load
 window.addEventListener('load', function () {
     setTimeout(updateMaxSliceCount, 500); // Delay to ensure full page load
+    setTimeout(storePeriodData, 500);
 });
 
 // Apply camera settings on page load
