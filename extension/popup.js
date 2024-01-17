@@ -41,11 +41,11 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('maxSliceCount').textContent = result.maxSliceNumber; // Update DOM element
             updateMaxSliceInputs(result.maxSliceNumber); // Update max attribute of target slice inputs
             updateOptimalShutterAngles(result.maxSliceNumber); // Update optimal shutter angles
-        
+
         }
     });
 
-    
+
     // Event listener for target slices input changes in each camera line
     document.getElementById('cameraList').addEventListener('change', function (event) {
         if (event.target.classList.contains('targetSlices')) {
@@ -130,19 +130,19 @@ function addCameraLine(camera = {}) {
     // Event listener for WebSocket toggle
     wsToggle.addEventListener('change', function () {
         const ip = cameraLine.querySelector('.ipAddress').value;
-    // Check if IP is defined and valid before sending
-    if (ip) {
-        const messageType = this.checked ? 'connectWebSocket' : 'disconnectWebSocket';
-        chrome.runtime.sendMessage({type: messageType, ip: ip});
-    } else {
-        console.error('IP address is undefined or invalid');
-    }
+        // Check if IP is defined and valid before sending
+        if (ip) {
+            const messageType = this.checked ? 'connectWebSocket' : 'disconnectWebSocket';
+            chrome.runtime.sendMessage({ type: messageType, ip: ip });
+        } else {
+            console.error('IP address is undefined or invalid');
+        }
     });
 
-    targetSlicesInput.addEventListener('change', function() {
+    targetSlicesInput.addEventListener('change', function () {
         updateRequiredOffsetForCamera(cameraLine);
     });
-    targetFirstSliceInput.addEventListener('change', function() {
+    targetFirstSliceInput.addEventListener('change', function () {
         updateRequiredOffsetForCamera(cameraLine);
     });
     updateRequiredOffsetForCamera(cameraLine); // Initial update
@@ -207,7 +207,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
-    chrome.storage.local.get(['slicePeriod', 'framePeriod'], function(result) {
+    chrome.storage.local.get(['slicePeriod', 'framePeriod'], function (result) {
         if (result.slicePeriod && result.framePeriod) {
             document.getElementById('slicePeriod').textContent = result.slicePeriod;
             document.getElementById('framePeriod').textContent = result.framePeriod;
@@ -244,7 +244,20 @@ function updateOptimalShutterAngleForInput(inputElement, maxSliceNumber) {
     if (optimalShutterAngleInput) {
         optimalShutterAngleInput.value = optimalShutterAngle.toFixed(2) + '°';
     }
+    
+    const cameraName = parentElement.querySelector('.cameraName').value;
+    sendOptimalShutterAngle(cameraName, optimalShutterAngle.toFixed(2));
+
 }
+
+function sendOptimalShutterAngle(cameraName, optimalShutterAngle) {
+    chrome.runtime.sendMessage({
+        type: 'optimalShutterAngle',
+        cameraName: cameraName,
+        optimalShutterAngle: optimalShutterAngle
+    });
+}
+
 
 function updateRequiredOffsetForCamera(cameraLine) {
     const targetSlicesInput = cameraLine.querySelector('.targetSlices');

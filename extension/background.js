@@ -1,5 +1,6 @@
 let cameraConnections = {};
 let sensorSyncOffsetUnitPicoseconds = null; 
+let shutterAngle = null;
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     switch (request.type) {
@@ -14,6 +15,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         const requiredOffsetMs = request.requiredOffsetMs;
         const sensorSyncOffsetUnitPicoseconds = request.sensorSyncOffsetUnitPicoseconds;
         calculateSensorSyncShift(requiredOffsetMs, sensorSyncOffsetUnitPicoseconds);
+    }
+    if (request.type === 'optimalShutterAngle') {
+        updateShutterAngle(request.cameraName, request.optimalShutterAngle);
+        
     }
 });
 
@@ -144,4 +149,11 @@ function calculateSensorSyncShift(requiredOffsetMs) {
     console.log("RED sensor sync shift number:", sensorSyncShiftNumber);
 
     // You can now use sensorSyncShiftNumber for further communication or logic
+}
+
+function updateShutterAngle(cameraName,optimalShutterAngle){
+    shutterAngle=parseFloat(optimalShutterAngle)*1000; //multiplly by 1000 for RED RCP
+    console.log(`Optimal Shutter Angle for ${cameraName}: `,shutterAngle);
+
+
 }
