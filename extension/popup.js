@@ -139,6 +139,13 @@ function addCameraLine(camera = {}) {
     }
     });
 
+    targetSlicesInput.addEventListener('change', function() {
+        updateRequiredOffsetForCamera(cameraLine);
+    });
+    targetFirstSliceInput.addEventListener('change', function() {
+        updateRequiredOffsetForCamera(cameraLine);
+    });
+    updateRequiredOffsetForCamera(cameraLine); // Initial update
 
     document.getElementById('cameraList').appendChild(template);
     saveCameras();
@@ -238,3 +245,18 @@ function updateOptimalShutterAngleForInput(inputElement, maxSliceNumber) {
         optimalShutterAngleInput.value = optimalShutterAngle.toFixed(2) + '°';
     }
 }
+
+function updateRequiredOffsetForCamera(cameraLine) {
+    const targetSlicesInput = cameraLine.querySelector('.targetSlices');
+    const targetFirstSliceInput = cameraLine.querySelector('.targetFirstSlice');
+    const requiredOffsetInput = cameraLine.querySelector('.requiredOffset');
+    const slicePeriod = parseFloat(document.getElementById('slicePeriod').textContent.replace('ms', ''));
+
+    if (targetSlicesInput && targetFirstSliceInput && requiredOffsetInput && !isNaN(slicePeriod)) {
+        const targetSlices = parseInt(targetSlicesInput.value) || 0;
+        const firstTargetSlice = parseInt(targetFirstSliceInput.value) || 0;
+        const requiredOffset = (firstTargetSlice - targetSlices) * slicePeriod;
+        requiredOffsetInput.value = requiredOffset.toFixed(3) + ' ms';
+    }
+}
+
