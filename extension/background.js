@@ -13,11 +13,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.type === 'calculateSensorSyncShift') {
         const requiredOffsetMs = request.requiredOffsetMs;
-        const sensorSyncOffsetUnitPicoseconds = request.sensorSyncOffsetUnitPicoseconds;
-        calculateSensorSyncShift(requiredOffsetMs, sensorSyncOffsetUnitPicoseconds);
+        calculateSensorSyncShift(requiredOffsetMs,request.ip);
     }
     if (request.type === 'optimalShutterAngle') {
-        updateShutterAngle(request.cameraName, request.optimalShutterAngle);
+        updateShutterAngle(request.cameraName, request.optimalShutterAngle,request.ip);
         
     }
 });
@@ -138,7 +137,7 @@ function sendRcpGetRequests(ws) {
     });
 }
 
-function calculateSensorSyncShift(requiredOffsetMs) {
+function calculateSensorSyncShift(requiredOffsetMs,ip) {
     if (!sensorSyncOffsetUnitPicoseconds) {
         console.error("Sensor sync offset unit in picoseconds not available.");
         return;
@@ -147,13 +146,32 @@ function calculateSensorSyncShift(requiredOffsetMs) {
     const requiredOffsetPicoseconds = requiredOffsetMs * 1000000000; // Convert ms to picoseconds
     const sensorSyncShiftNumber = Math.floor(requiredOffsetPicoseconds / sensorSyncOffsetUnitPicoseconds);
     console.log("RED sensor sync shift number:", sensorSyncShiftNumber);
+    console.log(ip)
+    const ws = cameraConnections[ip];
+    if (ws) {
+        sendRcpSetRequest(ws, "RCP_PARAM_SENSOR_SYNC_OFFSET_PIXELS", sensorSyncShiftNumber);
+    }
+    }
 
-    // You can now use sensorSyncShiftNumber for further communication or logic
-}
-
-function updateShutterAngle(cameraName,optimalShutterAngle){
+function updateShutterAngle(cameraName,optimalShutterAngle,ip){
     shutterAngle=parseFloat(optimalShutterAngle)*1000; //multiplly by 1000 for RED RCP
     console.log(`Optimal Shutter Angle for ${cameraName}: `,shutterAngle);
+    console.log(ip)
+    const ws = cameraConnections[ip];
+    if (ws) {
+        sendRcpSetRequest(ws, "RCP_PARAM_EXPOSURE_ANGLE", shutterAngle);
+    }
+}
 
+function sendRcpSetRequest(ws, paramId, value) {
+    const rcpSet = {
+        "type": "rcp_set",
+        "id": paramId,
+        "value": value
+    };
 
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(rcpSet));
+        console.log(`rcp_set request sent for ${paramId} with value ${value}`);
+    }
 }

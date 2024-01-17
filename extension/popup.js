@@ -246,15 +246,17 @@ function updateOptimalShutterAngleForInput(inputElement, maxSliceNumber) {
     }
     
     const cameraName = parentElement.querySelector('.cameraName').value;
-    sendOptimalShutterAngle(cameraName, optimalShutterAngle.toFixed(2));
+    const ip = parentElement.querySelector('.ipAddress').value;
+    sendOptimalShutterAngle(cameraName, optimalShutterAngle.toFixed(2),ip);
 
 }
 
-function sendOptimalShutterAngle(cameraName, optimalShutterAngle) {
+function sendOptimalShutterAngle(cameraName, optimalShutterAngle,ip) {
     chrome.runtime.sendMessage({
         type: 'optimalShutterAngle',
         cameraName: cameraName,
-        optimalShutterAngle: optimalShutterAngle
+        optimalShutterAngle: optimalShutterAngle,
+        ip:ip
     });
 }
 
@@ -270,11 +272,18 @@ function updateRequiredOffsetForCamera(cameraLine) {
         const firstTargetSlice = parseInt(targetFirstSliceInput.value) || 0;
         const requiredOffset = firstTargetSlice * slicePeriod;
         requiredOffsetInput.value = requiredOffset.toFixed(3) + ' ms';
+        const ip = cameraLine.querySelector('.ipAddress').value;
+
         //send to background
+        if (ip) {
         chrome.runtime.sendMessage({
             type: 'calculateSensorSyncShift',
-            requiredOffsetMs: requiredOffset // The calculated offset in milliseconds
+            requiredOffsetMs: requiredOffset, // The calculated offset in milliseconds
+            ip: ip // include the IP address
         });
+    } else {
+        console.error('IP address is undefined or invalid for required offset calculation');
+    }
     }
 }
 
