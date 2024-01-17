@@ -1,4 +1,5 @@
 let cameraConnections = {};
+let sensorSyncOffsetUnitPicoseconds = null; 
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     switch (request.type) {
@@ -8,6 +9,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         case 'disconnectWebSocket':
             disconnectWebSocket(request.ip);
             break;
+    }
+    if (request.type === 'calculateSensorSyncShift') {
+        const requiredOffsetMs = request.requiredOffsetMs;
+        const sensorSyncOffsetUnitPicoseconds = request.sensorSyncOffsetUnitPicoseconds;
+        calculateSensorSyncShift(requiredOffsetMs, sensorSyncOffsetUnitPicoseconds);
     }
 });
 
@@ -47,6 +53,7 @@ function connectWebSocket(ip) {
                         break;
                     case "SENSOR_SYNC_OFFSET_UNIT_PICO_SECONDS":
                         if (data.cur?.val !== undefined) {
+                            sensorSyncOffsetUnitPicoseconds = data.cur.val;
                             console.log(`SENSOR_SYNC_OFFSET_UNIT_PICO_SECONDS: ${data.cur.val}`);
                         }
                         break;
@@ -124,4 +131,17 @@ function sendRcpGetRequests(ws) {
             console.log(`rcp_get request sent for ${param}`);
         }
     });
+}
+
+function calculateSensorSyncShift(requiredOffsetMs) {
+    if (!sensorSyncOffsetUnitPicoseconds) {
+        console.error("Sensor sync offset unit in picoseconds not available.");
+        return;
+    }
+
+    const requiredOffsetPicoseconds = requiredOffsetMs * 1000000; // Convert ms to picoseconds
+    const sensorSyncShiftNumber = requiredOffsetPicoseconds / sensorSyncOffsetUnitPicoseconds;
+    console.log("RED sensor sync shift number:", sensorSyncShiftNumber);
+
+    // You can now use sensorSyncShiftNumber for further communication or logic
 }

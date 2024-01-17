@@ -257,6 +257,11 @@ function updateRequiredOffsetForCamera(cameraLine) {
         const firstTargetSlice = parseInt(targetFirstSliceInput.value) || 0;
         const requiredOffset = (firstTargetSlice - targetSlices) * slicePeriod;
         requiredOffsetInput.value = requiredOffset.toFixed(3) + ' ms';
+        //send to background
+        chrome.runtime.sendMessage({
+            type: 'calculateSensorSyncShift',
+            requiredOffsetMs: requiredOffset // The calculated offset in milliseconds
+        });
     }
 }
 
