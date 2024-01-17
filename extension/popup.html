@@ -60,12 +60,12 @@
     <a href="https://github.com/whoismikesmith/megapixel-camera-wizard" target="_blank"
         class="text-blue-500 hover:text-blue-600 mb-4">View on GitHub</a> <!-- GitHub link -->
     <div>
-    <label class="switch mb-4">
-        Convert Slice Times to microseconds
-        <input type="checkbox" id="toggleConversion">
-        <span class="slider round"></span>
-    </label>
-</div>
+        <label class="switch mb-4">
+            Convert Slice Times to microseconds
+            <input type="checkbox" id="toggleConversion">
+            <span class="slider round"></span>
+        </label>
+    </div>
     <!-- Section for displaying max slice count -->
     <div class="mb-4">
         <label for="maxSliceCount" class="font-medium">Max Slice Count:</label>
@@ -92,7 +92,7 @@
                         placeholder="Target First Slice">
                 </label>
             </div>
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between mb-2">
                 <label class="flex-1 mr-2">
                     Shutter Angle
                     <input type="number" class="shutterAngle w-full p-1 rounded border border-gray-300"
@@ -103,8 +103,31 @@
                     <input type="color" class="cameraColor w-6 h-6 border border-gray-300" value="#ff0000">
                     <!-- Default color set to red -->
                 </label>
-                <button class="deleteCamera bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600">Delete</button>
+
             </div>
+            <!-- RED Komodo RCP2 Checkbox -->
+            <label>
+                <input type="checkbox" class="redKomodoCheckbox"> RED Komodo RCP2
+            </label>
+
+            <!-- Additional fields for RED Komodo -->
+            <div class="redKomodoFields" style="display: none;">
+                <input type="text" class="ipAddress" placeholder="IP Address">
+                <input type="number" class="sensorShiftOffset" placeholder="Sensor Shift Offset">
+                <input type="text" class="sensorShiftOffsetUnit" placeholder="Unit" readonly>
+                <!-- WebSocket toggle switch -->
+                <label>
+                    Connect WebSocket:
+                    <input type="checkbox" class="wsToggle">
+                </label>
+                <div class="connectionStatus">
+                    <span>Status:</span>
+                    <div class="statusIndicator"
+                        style="display: inline-block; width: 10px; height: 10px; border-radius: 50%;"></div>
+                </div>
+            </div>
+
+            <button class="deleteCamera bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600">Delete</button>
         </div>
     </template>
     <script src="popup.js"></script> <!-- Link to your JavaScript file -->

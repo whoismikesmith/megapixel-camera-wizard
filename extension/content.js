@@ -114,3 +114,25 @@ chrome.storage.local.get(['cameras'], function (result) {
         applyCameraSettings(result.cameras);
     }
 });
+
+
+function setupWebSocketConnection(ipAddress, camera) {
+    const ws = new WebSocket(`ws://${ipAddress}:9998`);
+    ws.onopen = () => {
+        console.log("Connected to RED Komodo camera");
+        // Update connection status in the popup
+        // Send initial commands or requests if needed
+    };
+    ws.onerror = (error) => {
+        console.error("WebSocket Error:", error);
+    };
+    ws.onmessage = (event) => {
+        // Handle incoming messages from the camera
+    };
+    ws.onclose = () => {
+        console.log("Connection closed");
+        // Handle connection closure
+    };
+
+    return ws;
+}
