@@ -8,6 +8,7 @@ The Megapixel Camera Wizard is a Chrome extension designed to enhance the user i
 ## Features
 - **Toggle Conversion**: Convert subframe timings between milliseconds and microseconds.
 - **Camera Management**: Add, delete, and manage multiple camera settings including camera name, target first slice, shutter angle, and a unique color identifier.
+- **Directly Control Cameras Via API**: Currently only working with RED RCP2 on Red Komodo. Adjust Shutter Angle and Sensor Sync Offset
 - **GUI Enhancement**: Visually modify the web-based control system's interface based on the user-defined camera settings.
 - **Dynamic Slice Count Handling**: Automatically updates the maximum slice count based on changes in the web interface.
 - **User-Friendly Interface**: An easy-to-use popup interface for managing cameras and settings.
@@ -24,6 +25,7 @@ The Megapixel Camera Wizard is a Chrome extension designed to enhance the user i
 - Use the toggle checkbox to convert subframe timings.
 - Add, configure, or delete cameras using the provided interface in the popup.
 - The changes will be reflected in the web-based camera control system's interface.
+- For RED Komodo RCP2 Control, select RED RCP Checkbox, enter camera IP (make sure your control laptop is on the same network), and adjust target slice for sync offset and slice count for shutter angle.
 
 ## Screenshots
 ![Megapixel Camera Wizard Screenshot](screenshot.png)
