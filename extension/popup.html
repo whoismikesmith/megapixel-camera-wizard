@@ -54,7 +54,7 @@
     <div class="header flex items-center mb-4">
         <img src="images/icon16.png" alt="Camera Wizard Icon" class="h-8 w-8 mr-2"> <!-- Icon image -->
         <h1 class="text-lg font-bold flex-1">Camera Wizard</h1>
-        <span class="text-sm text-gray-600">v1.0.0</span> <!-- Version number -->
+        <span class="text-sm text-gray-600">v1.0.1</span> <!-- Version number -->
     </div>
 
     <a href="https://github.com/whoismikesmith/megapixel-camera-wizard" target="_blank"
@@ -96,10 +96,10 @@
                 </label>
             </div>
             <div class="flex items-center justify-between mb-2">
-                <label>Target Slices
+                <label class="flex-1 mr-2">Target Slices
                     <input type="number" class="targetSlices w-full p-1 rounded border border-gray-300" placeholder="Target Slices">
                 </label>
-                <label>Optimal Shutter Angle (readonly)
+                <label class="flex-1 mr-2">Optimal Shutter Angle (readonly)
                     <input type="text" class="optimalShutterAngle w-full p-1 rounded border border-gray-300" readonly>
                 </label>
                 
@@ -133,11 +133,12 @@
                     Connect WebSocket:
                     <input type="checkbox" class="wsToggle">
                 </label>
-                <div class="connectionStatus">
+                <div class="connectionStatus mt-2">
                     <span>Status:</span>
-                    <div class="statusIndicator"
-                        style="display: inline-block; width: 10px; height: 10px; border-radius: 50%;"></div>
+                    <div class="statusIndicator inline-block w-2 h-2 rounded-full" style="background-color: transparent;"></div>
+                    <span class="statusText ml-2"></span>
                 </div>
+                
             </div>
 
             <button class="deleteCamera bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600">Delete</button>

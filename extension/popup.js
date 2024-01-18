@@ -218,7 +218,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 function updateConnectionStatusUI(ip, status) {
-    // Implement logic to update the connection status indicator in the popup UI
+    // Find the camera line with the matching IP address
+    const cameraLines = document.querySelectorAll('.cameraLine');
+    cameraLines.forEach(line => {
+        const ipInput = line.querySelector('.ipAddress');
+        if (ipInput && ipInput.value === ip) {
+            // Update the connection status indicator
+            const statusIndicator = line.querySelector('.statusIndicator');
+            const statusText = line.querySelector('.statusText'); // Add a span with class 'statusText' next to the indicator in HTML
+
+            if (status === 'connected') {
+                statusIndicator.style.backgroundColor = 'green';
+                statusText.textContent = 'WebSocket Connected';
+            } else {
+                statusIndicator.style.backgroundColor = 'red';
+                statusText.textContent = 'WebSocket Disconnected';
+            }
+        }
+    });
 }
 
 function calculateOptimalShutterAngle(targetSlices, maxSlices) {
