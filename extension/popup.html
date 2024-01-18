@@ -97,10 +97,10 @@
             </div>
             <div class="flex items-center justify-between mb-2">
                 <label>Target Slices
-                    <input type="number" class="targetSlices" placeholder="Target Slices">
+                    <input type="number" class="targetSlices w-full p-1 rounded border border-gray-300" placeholder="Target Slices">
                 </label>
                 <label>Optimal Shutter Angle (readonly)
-                    <input type="text" class="optimalShutterAngle" readonly>
+                    <input type="text" class="optimalShutterAngle w-full p-1 rounded border border-gray-300" readonly>
                 </label>
                 
                 <label class="flex-1 mr-2">
@@ -110,21 +110,24 @@
                 </label>
 
             </div>
-
+            <div class="flex items-center justify-between mb-2">
             <label>Required Offset (ms, readonly)
-                <input type="text" class="requiredOffset" readonly>
+                <input type="text" class="requiredOffset w-full p-1 rounded border border-gray-300" readonly>
             </label>
-            
+            </div>
             <!-- RED Komodo RCP2 Checkbox -->
             <label>
-                <input type="checkbox" class="redKomodoCheckbox"> RED Komodo RCP2
+                RED Komodo RCP2
+                <input type="checkbox" class="redKomodoCheckbox"> 
             </label>
 
             <!-- Additional fields for RED Komodo -->
             <div class="redKomodoFields" style="display: none;">
-                <input type="text" class="ipAddress" placeholder="IP Address">
-                <input type="number" class="sensorShiftOffset" placeholder="Sensor Shift Offset">
-                <input type="text" class="sensorShiftOffsetUnit" placeholder="Unit" readonly>
+                <label class="flex-1 mr-2">IP Address
+                <input type="text" class="ipAddress w-full p-1 rounded border border-gray-300" placeholder="IP Address">
+            </label>
+                <input type="number" style="display: none;" class="sensorShiftOffset" placeholder="Sensor Shift Offset">
+                <input type="text" style="display: none;" class="sensorShiftOffsetUnit" placeholder="Unit" readonly>
                 <!-- WebSocket toggle switch -->
                 <label>
                     Connect WebSocket:
