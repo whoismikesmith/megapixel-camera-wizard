@@ -242,7 +242,7 @@ function updateOptimalShutterAngleForInput(inputElement, maxSliceNumber) {
     const optimalShutterAngleInput = parentElement.querySelector('.optimalShutterAngle');
 
     if (optimalShutterAngleInput) {
-        optimalShutterAngleInput.value = optimalShutterAngle.toFixed(2) + '°';
+        optimalShutterAngleInput.value = optimalShutterAngle.toFixed(2);
     }
     
     const cameraName = parentElement.querySelector('.cameraName').value;
