@@ -53,15 +53,19 @@ function injectHTML() {
                 </table>
                 <div class="el-divider el-divider--horizontal" role="separator" style="--el-border-style: solid;"></div>
                 <!-- add a camera button -->
-                <button type="button" class="el-button el-button--primary el-button--mini add-a-camera">
-                    <span class>Add a Camera</span>
-                </button>
+                <div class="row" style="padding-bottom:10px">
+                    <button type="button" class="el-button el-button--primary el-button--mini add-a-camera">
+                        <span class>Add a Camera</span>
+                    </button>
+                </div>
                 <div class="cameraList">
                 </div>
                 <template class="cameraTemplate">
                 
                 <div class="cameraItem">
-                <button type="button" class="cameraToggleButton el-button el-button--success el-button--mini">Toggle Camera Details</button> 
+                <div class="row" style="padding-bottom:10px">
+                    <button type="button" class="cameraToggleButton el-button el-button--success el-button--mini">Toggle Camera Details</button> 
+                </div>
                 <div class="cameraDetails">
                 <!-- camera name -->
                 <div class="flex fields">
@@ -90,7 +94,7 @@ function injectHTML() {
                 <!-- slice fields -->
                 <div class="flex fields">
                     <div class="el-form-item el-form-item--mini">
-                        <label class="el-form-item__label">Last Target Slice</label>
+                        <label class="el-form-item__label">Target Slice</label>
                         <div class="el-form-item__content">
                             <div class="is-controls-right" id="lastTargetSlice">
                                     <div class="el-input el-input--mini">
@@ -100,7 +104,7 @@ function injectHTML() {
                         </div>
                     </div>
                     <div class="el-form-item el-form-item--mini">
-                        <label class="el-form-item__label">Target Slice Count</label>
+                        <label class="el-form-item__label">Slice Count</label>
                         <div class="el-form-item__content">
                             <div class="is-controls-right" id="targetSliceCount">
                                     <div class="el-input el-input--mini">
@@ -113,7 +117,7 @@ function injectHTML() {
                 <!-- offsets fields -->
                 <div class="flex fields">
                     <div class="el-form-item el-form-item--mini">
-                        <label class="el-form-item__label">Required Offsets</label>
+                        <label class="el-form-item__label">Required Offset</label>
                         <div class="el-form-item__content">
                             <div class="is-controls-right" id="requiredOffset">
                                     <div class="el-input el-input--mini">
@@ -123,7 +127,7 @@ function injectHTML() {
                         </div>
                     </div>
                     <div class="el-form-item el-form-item--mini">
-                        <label class="el-form-item__label">Optimal Shutter Angle</label>
+                        <label class="el-form-item__label">Shutter Angle</label>
                         <div class="el-form-item__content">
                             <div class="is-controls-right" id="optimalShutterAngle">
                                     <div class="el-input el-input--mini">
@@ -212,9 +216,11 @@ function injectHTML() {
                 </div>
                 
                 <!-- delete a camera button -->
-                <button type="button" class="el-button el-button--danger el-button--mini delete-a-camera">
-                    <span class>Delete</span>
-                </button>
+                <div class="row" style="padding-bottom:10px">
+                    <button type="button" class="el-button el-button--danger el-button--mini delete-a-camera">
+                        <span class>Delete</span>
+                    </button>
+                </div>
                 </div> <!-- details -->
                 </div>
                 </template>
@@ -241,10 +247,13 @@ function addCameraItem() {
     const template = document.querySelector('.cameraTemplate').content.cloneNode(true);
     const newCamera = template.querySelector('div.cameraItem');
     const newCameraId = `camera-${cameraData.length}`;
+
     newCamera.id = newCameraId;
 
     // Default camera name
     const cameraName = `Camera ${cameraData.length + 1}`;
+    newCamera.setAttribute('data-camera-name', cameraName);
+
 
     // Set camera name in the input field
     const nameInput = newCamera.querySelector('input[type="text"]');
@@ -421,6 +430,7 @@ function saveCameras() {
         let toggleButton = item.querySelector('.cameraToggleButton');
         if (toggleButton) {
             toggleButton.textContent = `Toggle ${cameraName} Details`;
+            item.setAttribute('data-camera-name', cameraName); // Update data-camera-name attribute
         }
     });
 
@@ -491,14 +501,22 @@ function resetAllSlices(maxSlices) {
 
 
     // Attach the event listener to a parent element
-    document.body.addEventListener('click', function(event) {
-        // Check if the clicked element is a toggle button
-        if (event.target && event.target.classList.contains('cameraToggleButton')) {
-            console.log("Toggle camera clicked");
-            const details = event.target.nextElementSibling;
-            details.style.display = details.style.display === 'none' ? '' : 'none';
-        }
-    });
+document.body.addEventListener('click', function(event) {
+    // Check if the clicked element or its parent is a toggle button
+    let toggleButton = null;
+    if (event.target.classList.contains('cameraToggleButton')) {
+        toggleButton = event.target;
+    } else if (event.target.parentElement && event.target.parentElement.classList.contains('cameraToggleButton')) {
+        toggleButton = event.target.parentElement;
+    }
+
+    if (toggleButton) {
+        console.log("Toggle camera clicked");
+        // Get the parent element of the button and then find the next sibling
+        const details = toggleButton.parentElement.nextElementSibling;
+        details.style.display = details.style.display === 'none' ? '' : 'none';
+    }
+});
 
 
     document.addEventListener('change', function(event) {
@@ -542,11 +560,14 @@ function calculateRequiredOffset(cameraItem) {
 
     // Send message to background.js
     const ip = cameraItem.querySelector('#ipAddress .el-input__inner').value;
+    const name = cameraItem.querySelector('#cameraName .el-input__inner').value;
+    console.log("calculat offsets for : ",name);
     if (ip) {
         chrome.runtime.sendMessage({
             type: 'calculateSensorSyncShift',
             requiredOffsetMs: requiredOffset,
-            ip: ip
+            ip: ip,
+            name: name
         });
     }
 }
@@ -579,5 +600,23 @@ document.addEventListener('change', function(event) {
         const cameraItem = event.target.closest('.cameraItem');
         calculateRequiredOffset(cameraItem);
         calculateOptimalShutterAngle(cameraItem, projectMaxSlices);
+    }
+});
+
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    console.log(request);
+    if (request.type === 'syncOffsetPixels') {
+        const cameraIp = request.cameraIp;
+        const cameraName = request.cameraName;
+        const syncOffsetNumber = request.syncOffsetPixels;
+        const cameraItem = document.querySelector(`.cameraItem[data-camera-name='${cameraName}']`);
+        if (cameraItem) {
+            const sensorShiftField = cameraItem.querySelector('#redSensorShift .el-input__inner');
+            if (sensorShiftField) {
+                sensorShiftField.value = syncOffsetNumber;
+            }
+        }
+        console.log("received calculated sync shift of ",syncOffsetNumber,". for camera name : ",cameraName,". with IP of ",cameraIp);
     }
 });

@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     if (request.type === 'calculateSensorSyncShift') {
         const requiredOffsetMs = request.requiredOffsetMs;
-        calculateSensorSyncShift(requiredOffsetMs,request.ip);
+        calculateSensorSyncShift(requiredOffsetMs,request.ip,request.name);
     }
     if (request.type === 'optimalShutterAngle') {
         updateShutterAngle(request.cameraName, request.optimalShutterAngle,request.ip);
@@ -137,7 +137,7 @@ function sendRcpGetRequests(ws) {
     });
 }
 
-function calculateSensorSyncShift(requiredOffsetMs,ip) {
+function calculateSensorSyncShift(requiredOffsetMs,ip,name) {
     if (!sensorSyncOffsetUnitPicoseconds) {
         console.error("Sensor sync offset unit in picoseconds not available.");
         return;
@@ -151,6 +151,18 @@ function calculateSensorSyncShift(requiredOffsetMs,ip) {
     if (ws) {
         sendRcpSetRequest(ws, "RCP_PARAM_SENSOR_SYNC_OFFSET_PIXELS", sensorSyncShiftNumber);
     }
+    // Assume syncOffsetNumber is calculated
+    console.log("sending sync offset pixels : ",sensorSyncShiftNumber, " to ",name);
+    // Send the state to content.js
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, { 
+            type: 'syncOffsetPixels',
+            syncOffsetPixels: sensorSyncShiftNumber,
+            cameraIp: ip, // You need to identify which camera this offset belongs to
+            cameraName : name
+        });
+    });
+   
     }
 
 function updateShutterAngle(cameraName,optimalShutterAngle,ip){
