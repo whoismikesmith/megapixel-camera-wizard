@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('ntentLoaded', function () {
     const toggleSwitch = document.getElementById('toggleConversion');
 
     // Load the saved state of the toggle switch
@@ -303,4 +303,3 @@ function updateRequiredOffsetForCamera(cameraLine) {
     }
     }
 }
-

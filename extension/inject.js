@@ -61,6 +61,8 @@ function injectHTML() {
                 <template class="cameraTemplate">
                 
                 <div class="cameraItem">
+                <button type="button" class="cameraToggleButton el-button el-button--success el-button--mini">Toggle Camera Details</button> 
+                <div class="cameraDetails">
                 <!-- camera name -->
                 <div class="flex fields">
                     <div class="el-form-item el-form-item--mini">
@@ -115,7 +117,7 @@ function injectHTML() {
                         <div class="el-form-item__content">
                             <div class="is-controls-right" id="requiredOffset">
                                     <div class="el-input el-input--mini">
-                                        <input type="number" autocomplete="off" class="el-input__inner" role="spinbutton" aria-valuemax="10000" aria-valuemin="-10000" aria-valuenow="0" aria-disabled="false">
+                                        <input type="text" autocomplete="off" class="el-input__inner" role="spinbutton" aria-valuemax="10000" aria-valuemin="-10000" aria-valuenow="0" aria-disabled="false" readonly>
                                     </div>
                             </div>
                         </div>
@@ -125,7 +127,7 @@ function injectHTML() {
                         <div class="el-form-item__content">
                             <div class="is-controls-right" id="optimalShutterAngle">
                                     <div class="el-input el-input--mini">
-                                        <input type="number" autocomplete="off" class="el-input__inner" role="spinbutton" aria-valuemax="10000" aria-valuemin="-10000" aria-valuenow="0" aria-disabled="false">
+                                        <input type="number" autocomplete="off" class="el-input__inner" role="spinbutton" aria-valuemax="10000" aria-valuemin="-10000" aria-valuenow="0" aria-disabled="false" readonly>
                                     </div>
                             </div>
                         </div>
@@ -144,14 +146,76 @@ function injectHTML() {
                         </div>
                     </div>
                 </div>
-                <div class="enable row">
-                    <input id="redRcpEnable" type="checkbox">
-                    <label for="redRcpEnable">Enable RED RCP</label>
+                <div class="syncOffsetSelection">
+                <label class="el-form-item__label">Genlock Offset Type</label>
+                    <select class="offsetTypeDropdown">
+                        <option value="red">RED Sensor Offset</option>
+                        <option value="evertz">Evertz Clock Offset</option>
+                    </select>
                 </div>
+
+                <div class="redOffsetFields">
+                    <div class="flex fields">
+                        <div class="el-form-item el-form-item--mini">
+                            <label class="el-form-item__label">Sensor Shift</label>
+                            <div class="el-form-item__content">
+                                <div class="is-controls-right" id="redSensorShift">
+                                        <div class="el-input el-input--mini">
+                                            <input type="text" autocomplete="off" class="el-input__inner" role="spinbutton" aria-valuemax="10000" aria-valuemin="-10000" aria-valuenow="0" aria-disabled="false" readonly>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="enable row">
+                        <input id="redRcpEnable" type="checkbox">
+                        <label for="redRcpEnable">Enable RED RCP</label>
+                    </div>
+                </div>
+
+                <div class="evertzOffsetFields" style="display: none;">
+                    <div class="flex fields">
+                        <div class="el-form-item el-form-item--mini">
+                            <label class="el-form-item__label">Mode</label>
+                            <div class="el-form-item__content">
+                                <div class="is-controls-right" id="evertzMode">
+                                    <select class="modeDropdown">
+                                        <option value="1080p@24">1080p @ 24</option>
+                                        <option value="1080p@30">1080p @ 30</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex fields">
+                        <div class="el-form-item el-form-item--mini">
+                            <label class="el-form-item__label">Horizontal Lines</label>
+                            <div class="el-form-item__content">
+                                <div class="is-controls-right" id="evertzHorizontalLines">
+                                        <div class="el-input el-input--mini">
+                                            <input type="number" autocomplete="off" class="el-input__inner" role="spinbutton" aria-valuemax="10000" aria-valuemin="0" aria-valuenow="0" aria-disabled="false" readonly>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="el-form-item el-form-item--mini">
+                            <label class="el-form-item__label">Vertical Lines</label>
+                            <div class="el-form-item__content">
+                                <div class="is-controls-right" id="redSensorShift">
+                                        <div class="el-input el-input--mini">
+                                            <input type="number" autocomplete="off" class="el-input__inner" role="spinbutton" aria-valuemax="10000" aria-valuemin="0" aria-valuenow="0" aria-disabled="false" readonly>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- delete a camera button -->
                 <button type="button" class="el-button el-button--danger el-button--mini delete-a-camera">
                     <span class>Delete</span>
                 </button>
+                </div> <!-- details -->
                 </div>
                 </template>
             </form>
@@ -179,24 +243,51 @@ function addCameraItem() {
     const newCameraId = `camera-${cameraData.length}`;
     newCamera.id = newCameraId;
 
+    // Default camera name
+    const cameraName = `Camera ${cameraData.length + 1}`;
+
+    // Set camera name in the input field
+    const nameInput = newCamera.querySelector('input[type="text"]');
+    nameInput.value = cameraName;
+
+    // Update the toggle button text
+    const toggleButton = newCamera.querySelector('.cameraToggleButton');
+    toggleButton.textContent = `Toggle ${cameraName} Details`;
+
     // Attach event listener to 'Delete' button
     const deleteButton = newCamera.querySelector('button.delete-a-camera');
-    deleteButton.addEventListener('click', () => deleteCameraItem(newCameraId));
+   
+    deleteButton.addEventListener('click', function() {
+        // Code to remove the camera from the cameras array
+        deleteCameraItem(newCameraId)
+        
+    });
 
     document.querySelector('div.cameraList').appendChild(newCamera);
 
     // Add new camera data to array
-    cameraData.push({ id: newCameraId, data: {} }); // Update with actual data
+    cameraData.push({ id: newCameraId, name: cameraName, data: {} }); // Update with actual data
 }
 
 // Delete a Camera
 function deleteCameraItem(cameraId) {
     const cameraElement = document.getElementById(cameraId);
     if (cameraElement) {
+        // cleanup websocket connection
+        const ipAddress = cameraElement.querySelector('#ipAddress .el-input__inner').value;
+        const isConnected = cameraElement.querySelector('#redRcpEnable').checked;
+
+        // Disconnect WebSocket if connected
+        if (isConnected && ipAddress) {
+            chrome.runtime.sendMessage({ type: 'disconnectWebSocket', ip: ipAddress });
+        }
         cameraElement.remove();
     }
     // Remove camera data from array
     cameraData = cameraData.filter(camera => camera.id !== cameraId);
+    // Reapply camera settings to reset the highlighting
+    saveCameras();
+    applyCameraSettings(cameras);
 }
 
 // Function to get and store the largest slice number
@@ -227,7 +318,7 @@ function observerCallback(mutationsList, observer) {
             injectHTML();
             if (checkAndExtractHzValue()) {
                 updatePeriods(projectHz, projectMaxSlices)
-                updateTableValues(projectHz, projectMaxSlices, slicePeriod,framePeriod);
+                updateTableValues(projectHz, projectMaxSlices, slicePeriod, framePeriod);
                 //obs.disconnect(); // Stop observing once the content is found
             }
         }
@@ -249,7 +340,7 @@ if (trackNode) {
     const observer = new MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
             updateMaxSliceCount();
-            storePeriodData();
+            //storePeriodData();
         });
     });
 
@@ -268,8 +359,8 @@ function checkAndExtractHzValue() {
         if (label.textContent.includes('Hz')) {
             let matches = label.textContent.match(/(\d+\.?\d*)Hz/);
             if (matches) {
-                projectHz =  parseFloat(matches[1]);
-                console.log('Hz Value:',projectHz);
+                projectHz = parseFloat(matches[1]);
+                console.log('Hz Value:', projectHz);
                 chrome.storage.local.set({ 'projectHz': projectHz });
                 return matches[1]; // Return the value if found
             }
@@ -279,12 +370,12 @@ function checkAndExtractHzValue() {
 
 
 
-function updatePeriods(hz, slices){
-    if (hz && slices){
-        slicePeriod = ((1/hz) / slices)*1000; //*1000 for ms conversion
+function updatePeriods(hz, slices) {
+    if (hz && slices) {
+        slicePeriod = ((1 / hz) / slices) * 1000; //*1000 for ms conversion
         framePeriod = (slicePeriod * slices);
-        console.log("slice period: ",slicePeriod);
-        console.log("frame period: ",framePeriod);
+        console.log("slice period: ", slicePeriod);
+        console.log("frame period: ", framePeriod);
     }
 };
 
@@ -313,6 +404,7 @@ function updateTableValues(projectHz, projectMaxSlices, slicePeriod, framePeriod
 function saveCameras() {
     let cameras = [];
     document.querySelectorAll('.cameraItem').forEach((item, index) => {
+        let cameraName = item.querySelector('#cameraName .el-input__inner').value;
         let camera = {
             name: item.querySelector('#cameraName .el-input__inner').value,
             targetFirstSlice: item.querySelector('#lastTargetSlice .el-input__inner').value,
@@ -324,17 +416,23 @@ function saveCameras() {
             wsConnected: false // You'll need to adjust this according to your WebSocket logic
         };
         cameras.push(camera);
+
+        // Update the text of the toggle button
+        let toggleButton = item.querySelector('.cameraToggleButton');
+        if (toggleButton) {
+            toggleButton.textContent = `Toggle ${cameraName} Details`;
+        }
     });
 
     chrome.storage.local.set({ 'cameras': cameras });
     console.log('Applying and saving camera data:', cameras);
     applyCameraSettings(cameras);
 
-    
+
 }
 
 // Adding event listeners to save cameras when input fields are changed
-document.addEventListener('change', function(event) {
+document.addEventListener('change', function (event) {
     if (event.target.closest('.cameraItem')) {
         saveCameras();
     }
@@ -343,32 +441,143 @@ document.addEventListener('change', function(event) {
 
 // Apply camera settings based on the provided data
 function applyCameraSettings(cameras) {
-    // Clear existing custom styles
-    document.querySelectorAll('.sequencer .track th.slice').forEach(th => {
-        th.style.backgroundColor = ''; // Reset the background color
-    });
+    const maxSlices = document.querySelectorAll('.sequencer .track th.slice').length;
 
-    // Apply new styles based on camera data
+    // First, reset styles for all slices
+    resetAllSlices(maxSlices);
+
+    // Now apply styles for each camera
     cameras.forEach(camera => {
         if (camera.targetFirstSlice && camera.targetSlices && camera.color) {
-            console.log("setting new slice highlighting color for : ",camera);
-            const maxSlices = document.querySelectorAll('.sequencer .track th.slice').length;
-            const slicesToColor = camera.targetSlices;
+            const slicesToColor = parseInt(camera.targetSlices);
             let targetSlice = parseInt(camera.targetFirstSlice);
 
             for (let i = 0; i < slicesToColor; i++) {
-                // Calculate the slice number considering wrap-around
                 let sliceNumber = targetSlice - i;
-                if (sliceNumber < 1) {
-                    sliceNumber += maxSlices;
-                }
+                if (sliceNumber < 1) sliceNumber += maxSlices; //wrap around
 
-                // Apply color to the calculated slice
-                const sliceElement = document.querySelector(`.sequencer .track th.slice:nth-child(${sliceNumber + 1})`); // +4 for offset
+                const sliceElement = document.querySelector(`.sequencer .track th.slice:nth-child(${sliceNumber+1})`); // determine starting slice of color (should be the right side of group)
                 if (sliceElement) {
                     sliceElement.style.backgroundColor = camera.color;
+                    if (i === 0) { // target right most slice for labeling
+                        sliceElement.style.borderTopColor = "#FFFFFF";
+                        sliceElement.style.borderTop = "solid 2px";
+                        const cameraLabel = document.createElement("div");
+                        cameraLabel.className = "added-camera";
+                        cameraLabel.style.cssText = "position: absolute;transform: rotate(-20deg);transform-origin: left;left: 30px;top: -16px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;max-width: 100px;"
+                        cameraLabel.innerHTML = camera.name;
+                        sliceElement.appendChild(cameraLabel);
+                    }
                 }
             }
         }
     });
 }
+
+// Reset styles for all slices
+function resetAllSlices(maxSlices) {
+    for (let i = 1; i <= maxSlices+1; i++) {
+        const sliceElement = document.querySelector(`.sequencer .track th.slice:nth-child(${i})`);
+        if (sliceElement) {
+            sliceElement.style.backgroundColor = '';
+            sliceElement.style.borderTop = "none";
+            const existingCameraLabel = sliceElement.querySelector('.added-camera');
+            if (existingCameraLabel) {
+                sliceElement.removeChild(existingCameraLabel);
+            }
+        }
+    }
+}
+
+
+    // Attach the event listener to a parent element
+    document.body.addEventListener('click', function(event) {
+        // Check if the clicked element is a toggle button
+        if (event.target && event.target.classList.contains('cameraToggleButton')) {
+            console.log("Toggle camera clicked");
+            const details = event.target.nextElementSibling;
+            details.style.display = details.style.display === 'none' ? '' : 'none';
+        }
+    });
+
+
+    document.addEventListener('change', function(event) {
+        if (event.target.classList.contains('offsetTypeDropdown')) {
+            const selectedValue = event.target.value;
+            const redOffsetFields = event.target.closest('.cameraItem').querySelector('.redOffsetFields');
+            const evertzOffsetFields = event.target.closest('.cameraItem').querySelector('.evertzOffsetFields');
+    
+            if (selectedValue === 'red') {
+                redOffsetFields.style.display = 'block';
+                evertzOffsetFields.style.display = 'none';
+            } else if (selectedValue === 'evertz') {
+                redOffsetFields.style.display = 'none';
+                evertzOffsetFields.style.display = 'block';
+            }
+        }
+    });
+    
+//listener for RED RCP connection
+document.addEventListener('change', function(event) {
+    if (event.target.id === 'redRcpEnable') {
+        const cameraItem = event.target.closest('.cameraItem');
+        const ipAddress = cameraItem.querySelector('#ipAddress .el-input__inner').value;
+        const messageType = event.target.checked ? 'connectWebSocket' : 'disconnectWebSocket';
+
+        if (ipAddress) {
+            chrome.runtime.sendMessage({ type: messageType, ip: ipAddress });
+        }
+    }
+});
+
+// Function to calculate required offset
+function calculateRequiredOffset(cameraItem) {
+    // Retrieve input values
+    const targetFirstSlice = parseInt(cameraItem.querySelector('#lastTargetSlice .el-input__inner').value) || 0;
+    //const slicePeriod = parseFloat(document.getElementById('slicePeriod').textContent.replace('ms', ''));
+
+    // Calculate the required offset
+    const requiredOffset = targetFirstSlice * slicePeriod;
+    cameraItem.querySelector('#requiredOffset .el-input__inner').value = requiredOffset.toFixed(3) + ' ms';
+
+    // Send message to background.js
+    const ip = cameraItem.querySelector('#ipAddress .el-input__inner').value;
+    if (ip) {
+        chrome.runtime.sendMessage({
+            type: 'calculateSensorSyncShift',
+            requiredOffsetMs: requiredOffset,
+            ip: ip
+        });
+    }
+}
+
+// Function to calculate optimal shutter angle
+function calculateOptimalShutterAngle(cameraItem, projectMaxSlices) {
+    // Retrieve input value
+    const targetSlices = parseInt(cameraItem.querySelector('#targetSliceCount .el-input__inner').value) || 0;
+
+    // Calculate the optimal shutter angle
+    const optimalShutterAngle = (targetSlices / projectMaxSlices) * 360;
+    cameraItem.querySelector('#optimalShutterAngle .el-input__inner').value = optimalShutterAngle.toFixed(2);
+
+    // Send message to background.js
+    const ip = cameraItem.querySelector('#ipAddress .el-input__inner').value;
+    const cameraName = cameraItem.querySelector('#cameraName .el-input__inner').value;
+    if (ip && cameraName) {
+        chrome.runtime.sendMessage({
+            type: 'optimalShutterAngle',
+            cameraName: cameraName,
+            optimalShutterAngle: optimalShutterAngle,
+            ip: ip
+        });
+    }
+}
+
+// Event listener for input changes
+document.addEventListener('change', function(event) {
+    if (event.target.closest('.cameraItem')) {
+        const cameraItem = event.target.closest('.cameraItem');
+        calculateRequiredOffset(cameraItem);
+        calculateOptimalShutterAngle(cameraItem, projectMaxSlices);
+    }
+});
