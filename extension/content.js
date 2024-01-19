@@ -1,4 +1,9 @@
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if(request){
+        console.log("content received request : ",request);
+    }
+   
+    
     // Handling toggle conversion
     if (request.toggle !== undefined) {
         let timingsElements = document.querySelectorAll('.subframe.timings .value');
@@ -19,6 +24,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     // Handling camera data
     if (request.cameras) {
+        console.log("camera message received by content.js")
         applyCameraSettings(request.cameras);
     }
 
@@ -49,6 +55,7 @@ function applyCameraSettings(cameras) {
     // Apply new styles based on camera data
     cameras.forEach(camera => {
         if (camera.targetFirstSlice && camera.targetSlices && camera.color) {
+            console.log("setting new slice highlighting color for : ",camera);
             const maxSlices = document.querySelectorAll('.sequencer .track th.slice').length;
             const slicesToColor = camera.targetSlices;
             let targetSlice = parseInt(camera.targetFirstSlice);
