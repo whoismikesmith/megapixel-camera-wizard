@@ -4,7 +4,7 @@ let projectMaxSlices = null;
 let slicePeriod = null;
 let framePeriod = null;
 
-// Function to inject your HTML content
+// Function to inject HTML content
 function injectHTML() {
     const targetElement = document.querySelector('div.sidebar');
     if (targetElement && !document.querySelector('div.injectedCw')) {
@@ -422,7 +422,7 @@ function saveCameras() {
             redKomodoEnabled: item.querySelector('#redRcpEnable').checked,
             ip: item.querySelector('#ipAddress .el-input__inner').value,
             sensorShiftOffset: item.querySelector('#requiredOffset .el-input__inner').value,
-            wsConnected: false // You'll need to adjust this according to your WebSocket logic
+            wsConnected: false // Todo : adjust for websock logic
         };
         cameras.push(camera);
 
@@ -561,7 +561,7 @@ function calculateRequiredOffset(cameraItem) {
     // Send message to background.js
     const ip = cameraItem.querySelector('#ipAddress .el-input__inner').value;
     const name = cameraItem.querySelector('#cameraName .el-input__inner').value;
-    console.log("calculat offsets for : ",name);
+    console.log("calculate offsets for : ",name," based on offset in ms of ",requiredOffset);
     if (ip) {
         chrome.runtime.sendMessage({
             type: 'calculateSensorSyncShift',
@@ -592,6 +592,7 @@ function calculateOptimalShutterAngle(cameraItem, projectMaxSlices) {
             ip: ip
         });
     }
+    console.log("slice count : ",targetSlices," project max slices : ",projectMaxSlices, "optimal shutter angle :",optimalShutterAngle)
 }
 
 // Event listener for input changes
