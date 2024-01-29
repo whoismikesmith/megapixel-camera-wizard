@@ -28,7 +28,7 @@ The Megapixel Camera Wizard is a Chrome extension designed to enhance the user i
 - For RED Komodo RCP2 Control, select RED RCP Checkbox, enter camera IP (make sure your control laptop is on the same network), and adjust target slice for sync offset and slice count for shutter angle.
 
 ## Screenshots
-![Megapixel Camera Wizard Screenshot](screenshot_v1-0-1.png)
+![Megapixel Camera Wizard Screenshot](screenshot_v1-0-3.png)
 
 ## Contributing
 Contributions to the Megapixel Camera Wizard are welcome!
@@ -42,3 +42,4 @@ This project is licensed under the [MIT License](LICENSE) - see the LICENSE file
 ## Changelog
 - v1.0.0 - inital release
 - v1.0.1 - added RED RCP2 Protocol for Komodo Sync Shift and Shutter Angle Control
+- v1.0.1 - moved extension GUI from popup to being injected directly into the Helios GUI
